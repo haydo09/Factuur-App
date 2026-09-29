@@ -1,0 +1,74 @@
+{
+  "name": "factuur-app",
+  "productName": "Facturatie App",
+  "version": "1.1.0",
+  "description": "Facturatie App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "portable": "electron-builder --win portable",
+    "msi": "electron-builder --win msi",
+    "win": "electron-builder --win",
+    "nsis": "electron-builder --win nsis"
+  },
+  "keywords": [],
+  "author": "Hakan",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.hakan.factuur-app",
+    "productName": "Factuur App",
+    "win": {
+      "target": [
+        "portable",
+        "msi",
+        "appx",
+        "nsis"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "appx": {
+      "identityName": "Hakan.FactuurApp",
+      "publisher": "CN=01234567-89AB-CDEF-0123-456789ABCDEF",
+      "publisherDisplayName": "Hakan",
+      "applicationId": "FactuurApp"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/icon.png",
+      "category": "public.app-category.finance"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/icon.png",
+      "category": "Office"
+    },
+    "portable": {
+      "artifactName": "FactuurApp-Portable.exe"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "database.js",
+      "index.html",
+      "invoice-template.html",
+      "manifest.webmanifest",
+      "icon.png",
+      "assets/**/*"
+    ]
+  },
+  "dependencies": {
+    "nedb": "^1.8.0"
+  }
+}

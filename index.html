@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="application-name" content="Factuur App" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Factuur App" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>Factuur App</title>
+  <style>
+    :root{
+      /*--bg:#0f172a;/* slate-900 */
+      --bg: #f5f3ee;
+      --font-synthesis: none;
+      --rendering: optimizeLegibility;
+      --webkit-font-smoothing: antialiased;
+      --font-family: "Trebuchet MS", "Segoe UI", "sans-serif";
+      --color: #20211e;
+      --panel:#0b1220;/* dark card */
+      --panel7:#9ca3af;/* dark card */
+      --panel1:oklch(90.1% 0.076 70.697);/* dark card */
+      --panel2:oklch(90.5% 0.093 164.15);/* dark card */
+      --panel3:oklch(88.2% 0.059 254.128);/* dark card */
+      --panel4:oklch(95.4% 0.038 75.164);/* dark card */
+      --panel5:oklch(80.9% 0.105 251.813);/* dark card */
+      --panel6:oklch(80.8% 0.114 19.571);/* dark card */
+      --muted:#1e293b;/* slate-800 */
+      --text:#e5e7eb;/* slate-200 */
+      --sub:#93a4bf;/* slate-400 */
+      --line:#1f2a3e;/* border */
+      --blue:#3b82f6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+      --shadow:0 10px 25px rgba(0,0,0,.25)
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body { margin:0;display:grid;grid-template-columns:230px 1fr; background: radial-gradient(circle at 90% 10%, rgba(244, 218, 183, .48), transparent 31%), #f5f3ee; }
+    /*body{margin:0;display:grid;grid-template-columns:260px 1fr;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}*/
+
+    /* Sidebar */
+    /*nav{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0b1220,#0a0f1a);padding:22px;border-right:1px solid var(--line)}*/
+    nav{position:sticky;top:0;max-width:210px;height:100vh;background:var(--bg);padding:18px;border-right:1px solid var(--line)}
+    nav h1{font-size:18px;margin:0 0 6px}
+    /*.subtitle{font-size:12px;color:#9ca3af;margin-bottom:18px}*/
+    .subtitle{font-size:12px;color:black;margin-bottom:18px}
+    .nav-link{display:flex;gap:10px;align-items:center;color:black;text-decoration:none;padding:10px 12px;border-radius:12px;border:1px solid transparent;margin-bottom:6px}
+    .nav-link:hover{background:#15171be3;color:#fff;border-color:#1f2a3e}
+    .nav-link.active{background:#15171be3;border-color:#263246;color:#fff}
+    nav .footer{position:absolute;left:22px;right:22px;bottom:12px;color:black;font-size:12px;opacity:.75}
+
+    /* Main */
+    main{padding:24px 15px;overflow:auto}
+    header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+    header h1{margin:0;font-size:22px}
+    .header-right{display:flex;align-items:center;gap:10px}
+    .datetime{font-size:14px;color:black;/*background:#0c1426;*/padding:6px 10px;border:1px solid #152445;border-radius:8px}
+
+    .page{display:none}
+    .page.active{display:block}
+
+    /* Cards */
+    .cards{display:grid;grid-template-columns:repeat(6,minmax(160px,1fr));gap:12px}
+    .card{background:var(--panel);/*border:1px solid var(--line);border-color:#12dbbd;*/border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k{font-size:12px;color:#9ca3af}
+    .v{font-size:20px;margin-top:4px;color:#9ca3af}
+
+    .card1{background:var(--panel1);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k1{font-size:12px;font-weight:600;color:hsl(240, 3%, 7%)}
+    .v1{font-size:20px;margin-top:4px;font-weight:600;color:hsl(210, 5%, 15%)}
+
+    .card2{background:var(--panel5);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k2{font-size:12px;font-weight:600;color:hsl(240, 3%, 7%)}
+    .v2{font-size:20px;margin-top:4px;font-weight:600;color:hsl(210, 5%, 15%)}
+
+    .card3{background:var(--panel3);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k3{font-size:12px;font-weight:600;color:hsl(240, 3%, 7%)}
+    .v3{font-size:20px;margin-top:4px;font-weight:600;color:hsl(210, 5%, 15%)}
+
+    .card4{background:var(--panel4);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k4{font-size:12px;font-weight:600;color:hsl(240, 3%, 7%)}
+    .v4{font-size:20px;margin-top:4px;font-weight:600;color:hsl(210, 5%, 15%)}
+
+    .card5{background:var(--panel2);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k5{font-size:12px;font-weight:600;color:hsl(240, 3%, 7%)}
+    .v5{font-size:20px;margin-top:4px;font-weight:600;color:hsl(210, 5%, 15%)}
+
+    .card6{background:var(--panel6);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .k6{font-size:12px;font-weight:600;color:hsl(240, 3%, 7%)}
+    .v6{font-size:20px;margin-top:4px;font-weight:600;color:hsl(210, 5%, 15%)}
+
+    /* Tables */
+    .table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .table thead th{/*background:#0a1224e0;*/color:black;text-align:left;font-weight:600;padding:10px;border-bottom:1px solid var(--line)}
+    .table tbody td{padding:10px;border-bottom:1px solid #142038}
+    .table td:last-child{display:flex;flex-direction:row;gap:4px;align-items:flex-start}
+    .table tr:last-child td{border-bottom:0}
+    .empty{padding:16px;color:#93a4bf;text-align:center}
+    .status{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
+    .status.betaald{background:#0c2415;color:#86efac;border-color:#164a2f}
+    .status.onbetaald{background:#24140c;color:#fca5a5;border-color:#593026}
+
+    /* Buttons */
+    .toolbar{display:flex;gap:10px;margin:10px 0 12px}
+    .btn{appearance:none;border:1px solid var(--line);background:#0d1629;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+    .btn:hover{background:#0f1c35}
+    .btn.primary{background:linear-gradient(180deg,#1d4ed8,#1e40af);border-color:#1f3aa8}
+    .btn.primary:hover{background:linear-gradient(180deg,#1e40af,#1d4ed8)}
+    .btn.danger{background:linear-gradient(180deg,#b91c1c,#991b1b);border-color:#7f1d1d}
+    .btn.warn{background:linear-gradient(180deg,#d97706,#b45309);border-color:#92400e}
+    .btn.ghost{background:#0a1326}
+
+    /* Forms 
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field input,.field select,.field textarea{background:white;border:1px solid var(--line);color:black;border-radius:10px;padding:10px}*/
+
+    /* Forms */
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 40px}
+    .field{display:flex;flex-direction:row;align-items:center;gap:8px}
+    .field label{min-width:130px;text-align:right;flex-shrink:0}
+    .field input,.field select,.field textarea{flex:1;background:white;border:1px solid var(--line);color:black;border-radius:10px;padding:10px}
+
+    /* Dialogs */
+    dialog{border:1px solid var(--line);border-radius:16px;background:var(--bg);color:black;box-shadow:var(--shadow);width:min(920px,95vw)}
+    dialog::backdrop{background:rgba(0,0,0,.55)}
+    .dialog-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--line)}
+    .dialog-body{padding:14px}
+
+    @media (max-width:1200px){.cards{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:760px){body{grid-template-columns:1fr} nav{position:static;height:auto} .cards{grid-template-columns:repeat(2,1fr)} .header-right{width:100%;justify-content:space-between}}
+
+    /* Toast notification */
+    #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#20211e;color:#f5f3ee;padding:12px 24px;border-radius:10px;font-size:14px;opacity:0;transition:transform .3s ease,opacity .3s ease;pointer-events:none;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+    #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav>
+    <h1>Factuur Beheer</h1>
+    <div class="subtitle"></div>
+    <a href="#" class="nav-link active" data-page="dashboard">📊 Dashboard</a>
+    <a href="#" class="nav-link" data-page="klanten">👥 Klanten</a>
+    <a href="#" class="nav-link" data-page="facturen">🧾 Facturen</a>
+    <a href="#" class="nav-link" data-page="instellingen">⚙️ Instellingen</a>
+    <div class="footer">Created  with ❤️ byHakan</div>
+  </nav>
+
+  <!-- Main -->
+  <main>
+    <header>
+      <h1 id="page-title" style="color:black;font-weight:700;">Dashboard</h1>
+      <div class="header-right">
+        <div class="datetime" id="datetime">—</div>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="page active">
+      <div class="cards">
+        <div class="card1"><div class="k1">Totaal klanten</div><div class="v1" id="kpi-klanten">0</div></div>
+        <div class="card2"><div class="k2">Totaal facturen</div><div class="v2" id="kpi-facturen">0</div></div>
+        <div class="card3"><div class="k3">Betaalde facturen</div><div class="v3" id="kpi-betaald">0</div></div>
+        <div class="card4"><div class="k4">Onbetaalde facturen</div><div class="v4" id="kpi-onbetaald">0</div></div>
+        <div class="card5"><div class="k5">Totale omzet</div><div class="v5" id="kpi-omzet">€ 0,00</div></div>
+        <div class="card6"><div class="k6">Openstaande omzet</div><div class="v6" id="kpi-openstaand">€ 0,00</div></div>
+      </div>
+
+      <h2>Recente facturen</h2>
+      <table class="table">
+        <thead><tr><th>Factuur Nr.</th><th>Klant</th><th>Datum</th><th>Bedrag</th><th>Status</th></tr></thead>
+        <tbody id="recent-facturen"><tr><td colspan="5" class="empty">Nog geen facturen</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- Klanten -->
+    <section id="klanten" class="page">
+      <div class="toolbar"><button class="btn primary" id="btnNewCustomer">+ Nieuwe klant</button></div>
+      <table class="table">
+        <thead><tr><th>Bedrijfsnaam</th><th>Email</th><th>Telefoon</th><th>Plaats</th><th style="width:220px">Acties</th></tr></thead>
+        <tbody id="klanten-tbody"><tr><td colspan="5" class="empty">Nog geen klanten</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- Facturen -->
+    <section id="facturen" class="page">
+      <div class="toolbar"><button class="btn primary" id="btnNewInvoice">+ Nieuwe factuur</button></div>
+      <table class="table">
+        <thead><tr><th>Factuur Nr.</th><th>Klant</th><th>Datum</th><th>Vervaldatum</th><th>Bedrag</th><th>Status</th><th style="width:340px">Acties</th></tr></thead>
+        <tbody id="facturen-tbody"><tr><td colspan="7" class="empty">Nog geen facturen</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- Instellingen -->
+    <section id="instellingen" class="page">
+      <h2>Bedrijfsgegevens</h2>
+      <form id="settings-form" class="grid-2">
+        <div class="field"><label for="bedrijf">Bedrijfsnaam :</label><input id="bedrijf" name="bedrijf" required></div>
+        <div class="field"><label for="email">Email :</label><input id="email" name="email" type="email"></div>
+        <div class="field"><label for="adres">Adres :</label><input id="adres" name="adres"></div>
+        <div class="field"><label for="stad">Stad :</label><input id="stad" name="stad"></div>
+        <div class="field"><label for="postcode">Postcode :</label><input id="postcode" name="postcode"></div>
+        <div class="field"><label for="telefoon">Telefoonnummer :</label><input id="telefoon" name="telefoon"></div>
+        <div class="field"><label for="kvk">KvK Nummer :</label><input id="kvk" name="kvk"></div>
+        <div class="field"><label for="btw">BTW Nummer :</label><input id="btw" name="btw"></div>
+        <div class="field"><label for="iban">IBAN :</label><input id="iban" name="iban"></div>
+        <div class="field"><label for="land">Land :</label><input id="land" name="land"></div>
+        <div style="grid-column:1/-1;display:flex;gap:10px;margin-top:8px">
+          <button class="btn primary" type="submit">Opslaan</button>
+          <button class="btn ghost" type="reset">Reset</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Dialog: Nieuwe/Bewerk Klant -->
+  <dialog id="dlgKlant">
+    <form method="dialog" id="klantForm">
+      <div class="dialog-head">
+        <strong id="dlgKlantTitle">Nieuwe klant</strong>
+        <div>
+          <button class="btn ghost" value="cancel" type="button" onclick="closeDialog('dlgKlant')">Sluiten</button>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <input type="hidden" name="id" />
+        <div class="grid-2">
+          <div class="field"><label for="klant-bedrijfsnaam">Bedrijfsnaam :</label><input id="klant-bedrijfsnaam" name="bedrijfsnaam" required></div>
+          <div class="field"><label for="klant-email">Email :</label><input id="klant-email" name="email" type="email"></div>
+          <div class="field"><label for="klant-telefoon">Telefoon :</label><input id="klant-telefoon" name="telefoon"></div>
+          <div class="field"><label for="klant-adres">Adres :</label><input id="klant-adres" name="adres"></div>
+          <div class="field"><label for="klant-plaats">Plaatsnaam :</label><input id="klant-plaats" name="plaats"></div>
+          <div class="field"><label for="klant-postcode">Postcode :</label><input id="klant-postcode" name="postcode"></div>
+          <div class="field"><label for="klant-land">Land :</label><input id="klant-land" name="land"></div>
+        </div>
+        <div class="toolbar">
+          <button class="btn primary" id="saveKlantBtn" type="submit">Opslaan</button>
+          <button class="btn" type="button" onclick="closeDialog('dlgKlant')">Annuleren</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Nieuwe/Bewerk Factuur -->
+  <dialog id="dlgFactuur">
+    <form method="dialog" id="factuurForm">
+      <div class="dialog-head">
+        <strong id="dlgFactuurTitle">Nieuwe factuur</strong>
+        <div>
+          <button class="btn ghost" value="cancel" type="button" onclick="closeDialog('dlgFactuur')">Sluiten</button>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <input type="hidden" name="id" />
+        <div class="grid-2">
+          <div class="field"><label for="factuurNummer">Factuur Nummer :</label><input id="factuurNummer" name="nummer" readonly></div>
+          <div class="field"><label for="factuurKlant">Klant :</label><select id="factuurKlant" name="klant" style="width:150px"></select></div>
+          <div class="field"><label for="termijnSel">Betalingstermijn :</label><select name="termijn" id="termijnSel">
+            <option value="15">15 dagen</option>
+            <option value="30" selected>30 dagen</option>
+            <option value="60">60 dagen</option>
+          </select></div>
+          <div class="field"><label for="factuurDatum">Factuur Datum :</label><input type="date" name="datum" id="factuurDatum"></div>
+          <div class="field"><label for="vervalDatum">Vervaldatum :</label><input type="date" name="vervaldatum" id="vervalDatum" readonly></div>
+          <div class="field" style="grid-column:1/-1"><label for="notitie">Opmerkingen :</label><textarea id="notitie" name="notitie" rows="2" placeholder="Factuur footer / opmerkingen"></textarea></div>
+        </div>
+
+        <h3>Factuur items</h3>
+        <table class="table" id="itemsTable">
+          <thead><tr><th>Beschrijving</th><th style="width:120px">Aantal/Uur</th><th style="width:80px">Prijs</th><th style="width:80px">BTW</th><th style="width:80px">Actie</th></tr></thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+        <div class="toolbar"><button class="btn" type="button" id="addItemBtn">+ Item</button></div>
+
+        <div class="grid-2" style="margin-top:8px">
+          <div></div>
+          <div>
+            <div>Subtotaal: <span id="subtotaal">€ 0,00</span></div>
+            <div>BTW: <span id="btwBedrag">€ 0,00</span></div>
+            <div><strong>Totaal: <span id="totaal">€ 0,00</span></strong></div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn primary" id="saveFactuurBtn" type="submit">Opslaan</button>
+          <button class="btn" type="button" onclick="closeDialog('dlgFactuur')">Annuleren</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast"></div>
+
+  <dialog id="dlgConfirm">
+    <div class="dialog-body" style="text-align:center;padding:24px">
+      <p id="confirmMsg" style="margin-bottom:20px;font-size:16px"></p>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="btn primary" id="confirmYes">Ja</button>
+        <button class="btn" id="confirmNo">Nee</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+  // ====== Utilities ======
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const fmtEUR = n => (Number(n)||0).toLocaleString('nl-NL',{style:'currency',currency:'EUR'});
+  const todayStr = () => new Date().toISOString().slice(0,10);
+  const addDays = (dateStr, days) => {const d=new Date(dateStr); d.setDate(d.getDate()+Number(days||0)); return d.toISOString().slice(0,10)};
+
+  function closeDialog(id){ const dlg = document.getElementById(id); if(dlg.open) dlg.close(); }
+  function openDialog(id){ const dlg = document.getElementById(id); if(!dlg.open) dlg.showModal(); }
+
+  let toastTimer;
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove('show'), 2500);
+  }
+
+  function showConfirm(msg){
+    return new Promise(resolve => {
+      const dlg = document.getElementById('dlgConfirm');
+      document.getElementById('confirmMsg').textContent = msg;
+      dlg.showModal();
+      document.getElementById('confirmYes').onclick = () => { dlg.close(); resolve(true); };
+      document.getElementById('confirmNo').onclick = () => { dlg.close(); resolve(false); };
+    });
+  }
+
+  function esc(s){ return String(s||'').replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+  // ====== PWA service worker ======
+
+  async function registerServiceWorker(){
+    if(window.electronAPI) return; // Electron: geen service worker nodig
+    if(!('serviceWorker' in navigator)) return;
+    try {
+      await navigator.serviceWorker.register('./sw.js');
+    } catch (err) {
+      console.warn('Service worker kon niet worden geregistreerd:', err);
+    }
+  }
+
+  // ====== Navigation ======
+  document.addEventListener('DOMContentLoaded', function(){
+    console.log('DOM loaded, setting up navigation');
+    const yearEl = document.querySelector('#year');
+    if(yearEl) yearEl.textContent = new Date().getFullYear();
+    
+    const navLinks = document.querySelectorAll('.nav-link');
+    console.log('Found nav links:', navLinks.length);
+    
+    navLinks.forEach(a=>a.addEventListener('click',e=>{
+      e.preventDefault();
+      console.log('Clicked:', a.dataset.page);
+      
+      document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+      
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      
+      const tgt = a.dataset.page;
+      const targetPage = document.getElementById(tgt);
+      if(targetPage) {
+        targetPage.classList.add('active');
+        console.log('Activated page:', tgt);
+      } else {
+        console.error('Page not found:', tgt);
+      }
+      
+      const pageTitle = document.querySelector('#page-title');
+      if(pageTitle) pageTitle.textContent = a.textContent.replace(/^\W+/,'');
+    }));
+
+    function tick(){ 
+      const dt = document.querySelector('#datetime');
+      if(dt) dt.textContent = new Date().toLocaleString('nl-NL',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); 
+    }
+    setInterval(tick,1000); tick();
+
+    registerServiceWorker();
+    init();
+  });
+
+  // ====== NeDB (via IPC) ======
+  let klantenCache=[]; let facturenCache=[]; let settingsCache={};
+
+  async function init(){
+    // load settings
+    const s = await window.electronAPI.db.instellingen.get();
+    if(s){ settingsCache=s; for(const [k,v] of Object.entries(s)){ const el=$(`#settings-form [name="${k}"]`); if(el) el.value=v; } }
+
+    // bind toolbar
+    $('#btnNewCustomer').addEventListener('click',()=> openKlantDialog());
+    $('#btnNewInvoice').addEventListener('click',()=> openFactuurDialog());
+
+    // settings save
+    $('#settings-form').addEventListener('submit', async (e)=>{
+      e.preventDefault(); const data = Object.fromEntries(new FormData(e.target).entries());
+      settingsCache={...data, id:'company'}; await window.electronAPI.db.instellingen.save(settingsCache); showToast('Instellingen opgeslagen.');
+    });
+
+    await refreshAll();
+  }
+
+  async function refreshAll(){ await loadKlanten(); await loadFacturen(); renderKPIs(); renderRecent(); fillKlantSelect(); }
+
+  // ====== Klanten ======
+  async function loadKlanten(){
+    const list = await window.electronAPI.db.klanten.getAll();
+    klantenCache = list;
+    const tb = $('#klanten-tbody'); tb.innerHTML='';
+    if(list.length===0){ tb.innerHTML = `<tr><td colspan="5" class="empty">Nog geen klanten</td></tr>`; return; }
+    list.forEach(k=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esc(k.bedrijfsnaam||'')}</td><td>${esc(k.email||'')}</td><td>${esc(k.telefoon||'')}</td><td>${esc(k.plaats||'')}</td>
+        <td>
+          <button class="btn" onclick="openKlantDialog('${k._id}')">Bewerk</button>
+          <button class="btn danger" onclick="deleteKlant('${k._id}')">Verwijder</button>
+        </td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function openKlantDialog(id){
+    const form = $('#klantForm'); form.reset(); form.id.value='';
+    if(id){
+      const k = klantenCache.find(x=>x._id===id); if(!k) return;
+      form.id.value = k._id; form.bedrijfsnaam.value=k.bedrijfsnaam||''; form.email.value=k.email||'';
+      form.telefoon.value=k.telefoon||''; form.adres.value=k.adres||''; form.plaats.value=k.plaats||'';
+      form.postcode.value=k.postcode||''; form.land.value=k.land||''; $('#dlgKlantTitle').textContent='Klant bewerken';
+    } else { $('#dlgKlantTitle').textContent='Nieuwe klant'; }
+    openDialog('dlgKlant');
+  }
+
+  $('#klantForm').addEventListener('submit', async (e)=>{
+    e.preventDefault(); const data = Object.fromEntries(new FormData(e.target).entries());
+    const rec = {bedrijfsnaam:data.bedrijfsnaam,email:data.email,telefoon:data.telefoon,adres:data.adres,plaats:data.plaats,postcode:data.postcode,land:data.land};
+    if(data.id){ rec._id=data.id; await window.electronAPI.db.klanten.update(data.id, rec); }
+    else { await window.electronAPI.db.klanten.insert(rec); }
+    closeDialog('dlgKlant'); await refreshAll();
+  });
+
+  async function deleteKlant(id){ if(!await showConfirm('Klant verwijderen?')) return; await window.electronAPI.db.klanten.delete(id); await refreshAll(); }
+
+  function fillKlantSelect(){ const sel = $('#factuurKlant'); sel.innerHTML = klantenCache.map(k=>`<option>${esc(k.bedrijfsnaam)}</option>`).join(''); }
+
+  // ====== Facturen ======
+  function computeTotals(f){ const items=f.items||[]; let subt=0, btw=0; items.forEach(it=>{ const line=(Number(it.aantal)||0)*(Number(it.prijs)||0); subt+=line; btw+= line*((Number(it.btw)||0)/100); }); return {subtotaal:subt, btw:btw, totaal:subt+btw}; }
+
+  async function loadFacturen(){
+    const list = await window.electronAPI.db.facturen.getAll();
+    facturenCache = list.sort((a,b)=> (b.datum||'').localeCompare(a.datum||''));
+    const tb = $('#facturen-tbody'); tb.innerHTML='';
+    if(facturenCache.length===0){ tb.innerHTML = `<tr><td colspan="7" class="empty">Nog geen facturen</td></tr>`; return; }
+    facturenCache.forEach(f=>{
+      const t = computeTotals(f);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esc(f.nummer)}</td><td>${esc(f.klant)}</td><td>${esc(f.datum||'')}</td><td>${esc(f.vervaldatum||'')}</td><td>${fmtEUR(t.totaal)}</td>
+        <td><span class="status ${f.status==='Betaald'?'betaald':'onbetaald'}">${esc(f.status||'Onbetaald')}</span></td>
+        <td>
+          <button class="btn" onclick="openFactuurDialog('${f._id}')">Bewerk</button>
+          <button class="btn" onclick="togglePaid('${f._id}')">${f.status==='Betaald'?'Markeer onbetaald':'Markeer betaald'}</button>
+          <button class="btn" onclick="exportPDF('${f._id}')">Exporteer PDF</button>
+          <button class="btn danger" onclick="deleteFactuur('${f._id}')">Verwijder</button>
+        </td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  async function openFactuurDialog(id){
+    const form = $('#factuurForm'); form.reset(); $('#itemsBody').innerHTML='';
+    form.id.value='';
+    let rec;
+    if(id){
+      rec = facturenCache.find(x=>x._id===id); if(!rec) return;
+      form.id.value=rec._id; form.nummer.value=rec.nummer; form.klant.value=rec.klant; form.termijn.value=rec.termijn||30;
+      form.datum.value=rec.datum||todayStr(); form.vervaldatum.value=rec.vervaldatum||addDays(form.datum.value, form.termijn.value); form.notitie.value=rec.notitie||'';
+      (rec.items||[]).forEach(addItemRow);
+      $('#dlgFactuurTitle').textContent='Factuur bewerken';
+    } else {
+      // generate next number
+      const meta = await window.electronAPI.db.meta.get('lastInvoiceSeq');
+      const next = (meta?.value||0)+1; const nummer = `INV-2025-${String(next).padStart(4,'0')}`;
+      form.nummer.value = nummer; form.termijn.value=30; form.datum.value=todayStr(); form.vervaldatum.value=addDays(form.datum.value,30); form.notitie.value='';
+      addItemRow({beschrijving:'',aantal:1,prijs:0,btw:21});
+      $('#dlgFactuurTitle').textContent='Nieuwe factuur';
+    }
+    openDialog('dlgFactuur');
+    recalcTotals();
+  }
+
+  // Items
+  function addItemRow(data){
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td><input name="beschrijving" value="${data?.beschrijving?esc(data.beschrijving):''}"></td>
+      <td><input name="aantal" type="number" min="0" step="1" value="${Number(data?.aantal??1)}"></td>
+      <td><input name="prijs" type="number" step="0.01" value="${Number(data?.prijs??0)}"></td>
+      <td><select name="btw"><option value="0" ${Number(data?.btw)===0?'selected':''}>0%</option><option value="9" ${Number(data?.btw)===9?'selected':''}>9%</option><option value="21" ${Number(data?.btw)===21?'selected':''}>21%</option></select></td>
+      <td><button class="btn danger" type="button">Verwijder</button></td>`;
+    tr.addEventListener('input',recalcTotals); tr.addEventListener('change',recalcTotals);
+    tr.querySelector('button').addEventListener('click',()=>{ tr.remove(); recalcTotals(); });
+    $('#itemsBody').appendChild(tr);
+  }
+  $('#addItemBtn').addEventListener('click',()=> addItemRow({beschrijving:'',aantal:1,prijs:0,btw:21}));
+
+  // Termijn/datum logic
+  $('#termijnSel').addEventListener('change',()=> $('#vervalDatum').value = addDays($('#factuurDatum').value, $('#termijnSel').value));
+  $('#factuurDatum').addEventListener('change',()=> $('#vervalDatum').value = addDays($('#factuurDatum').value, $('#termijnSel').value));
+
+  function recalcTotals(){
+    let subt=0, btw=0;
+    $$('#itemsBody tr').forEach(tr=>{
+      const a = Number(tr.querySelector('[name=aantal]').value)||0;
+      const p = Number(tr.querySelector('[name=prijs]').value)||0;
+      const b = Number(tr.querySelector('[name=btw]').value)||0;
+      const line = a*p; subt += line; btw += line*(b/100);
+    });
+    $('#subtotaal').textContent = fmtEUR(subt);
+    $('#btwBedrag').textContent = fmtEUR(btw);
+    $('#totaal').textContent = fmtEUR(subt+btw);
+  }
+
+  // Save invoice
+  $('#factuurForm').addEventListener('submit', async (e)=>{
+    e.preventDefault(); const data = Object.fromEntries(new FormData(e.target).entries());
+    const items=[]; $$('#itemsBody tr').forEach(tr=> items.push({
+      beschrijving: tr.querySelector('[name=beschrijving]').value,
+      aantal: Number(tr.querySelector('[name=aantal]').value)||0,
+      prijs: Number(tr.querySelector('[name=prijs]').value)||0,
+      btw: Number(tr.querySelector('[name=btw]').value)||0,
+    }));
+    const rec = {nummer:data.nummer, klant:data.klant, termijn:Number(data.termijn||0), datum:data.datum, vervaldatum:data.vervaldatum, notitie:data.notitie||'', items, status:'Onbetaald'};
+
+    if(data.id){ rec._id = data.id; const cur = facturenCache.find(x=>x._id===rec._id); if(cur) rec.status = cur.status||'Onbetaald'; await window.electronAPI.db.facturen.update(data.id, rec); }
+    else {
+      await window.electronAPI.db.facturen.insert(rec);
+      const meta = await window.electronAPI.db.meta.get('lastInvoiceSeq'); const next=(meta?.value||0)+1; await window.electronAPI.db.meta.set('lastInvoiceSeq', next);
+    }
+    closeDialog('dlgFactuur'); await refreshAll();
+  });
+
+  async function togglePaid(id){ const f = facturenCache.find(x=>x._id===id); if(!f) return; f.status = (f.status==='Betaald')?'Onbetaald':'Betaald'; await window.electronAPI.db.facturen.update(id, f); await refreshAll(); }
+  async function deleteFactuur(id){ if(!await showConfirm('Factuur verwijderen?')) return; await window.electronAPI.db.facturen.delete(id); await refreshAll(); }
+
+  // ====== Dashboard ======
+  function renderKPIs(){
+    $('#kpi-klanten').textContent = klantenCache.length;
+    $('#kpi-facturen').textContent = facturenCache.length;
+    const paid = facturenCache.filter(f=>f.status==='Betaald');
+    const unpaid = facturenCache.filter(f=>f.status!=='Betaald');
+    $('#kpi-betaald').textContent = paid.length; $('#kpi-onbetaald').textContent = unpaid.length;
+    const totAll = facturenCache.reduce((s,f)=> s+computeTotals(f).totaal, 0);
+    const totOpen = unpaid.reduce((s,f)=> s+computeTotals(f).totaal, 0);
+    $('#kpi-omzet').textContent = fmtEUR(totAll);
+    $('#kpi-openstaand').textContent = fmtEUR(totOpen);
+  }
+
+  function renderRecent(){
+    const tb = $('#recent-facturen'); tb.innerHTML='';
+    if(facturenCache.length===0){ tb.innerHTML=`<tr><td colspan="5" class="empty">Nog geen facturen</td></tr>`; return; }
+    const list = [...facturenCache].sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
+    list.slice(0,5).forEach(f=>{ const t=computeTotals(f); const tr=document.createElement('tr'); tr.innerHTML=`<td>${esc(f.nummer)}</td><td>${esc(f.klant)}</td><td>${esc(f.datum||'')}</td><td>${fmtEUR(t.totaal)}</td><td>${esc(f.status||'Onbetaald')}</td>`; tb.appendChild(tr); });
+  }
+
+  // ====== Export PDF ======
+  async function exportPDF(id){
+    const f = facturenCache.find(x=>x._id===id); if(!f){ showToast('Factuur niet gevonden'); return; }
+    const s = settingsCache.id ? settingsCache : await window.electronAPI.db.instellingen.get() || {};
+    const klant = klantenCache.find(k => k.bedrijfsnaam === f.klant) || {};
+    const data = { invoice: f, company: s, customer: klant };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    const w = window.open(`./invoice-template.html?data=${encoded}`,'_blank');
+    if(!w){ showToast('De factuur kan niet worden geopend. Sta pop-ups toe.'); return; }
+  }
+
+  async function exportPDFCore(id, w){
+    const f = facturenCache.find(x=>x._id===id); if(!f){ showToast('Factuur niet gevonden'); w.close(); return; }
+    const s = settingsCache.id ? settingsCache : await window.electronAPI.db.instellingen.get() || {};
+    const t = computeTotals(f);
+    // Zoek klant details op basis van naam (of pas aan naar ID als je met klant-ID werkt)
+    const klant = klantenCache.find(k => k.bedrijfsnaam === f.klant) || {};
+
+    const html = `<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"><title>${f.nummer}</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .invoice-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 10mm;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .invoice-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+        
+        .invoice-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .invoice-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+        }
+        
+        .invoice-meta {
+            text-align: right;
+            line-height: 1.8;
+        }
+        
+        .invoice-meta div {
+            margin-bottom: 5px;
+        }
+        
+        .invoice-meta strong {
+            color: var(--dark);
+            min-width: 150px;
+            display: inline-block;
+        }
+        
+        .invoice-addresses {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-address-box {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            min-height: 150px;
+        }
+        
+        .invoice-address-box h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 6px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .invoice-address-box div {
+            margin-bottom: 4px;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        
+        .invoice-table th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .invoice-table th:last-child,
+        .invoice-table td:last-child {
+            text-align: right;
+        }
+        
+        .invoice-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .invoice-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        .invoice-table tbody tr:hover {
+            background: var(--light);
+        }
+        
+        .invoice-totals {
+            width: 350px;
+            margin-left: auto;
+            background: var(--light);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .invoice-totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .invoice-totals-row:last-child {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+            border-top: 3px solid var(--primary);
+            border-bottom: none;
+            margin-top: 8px;
+            padding-top: 10px;
+        }
+        
+        .invoice-footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.65rem;
+            line-height: 1.3;
+            page-break-inside: avoid;
+        }
+        
+        .invoice-footer .notes {
+            font-style: italic;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+        }
+        
+        .bank-details {
+            background: var(--light);
+            padding: 6px 8px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .bank-details strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.7rem;
+        }
+        
+        .bank-details-content {
+            white-space: pre-line;
+            text-align: center;
+            line-height: 1.4;
+            font-size: 0.65rem;
+        }
+        
+        /* Print Styles */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .invoice-container {
+                width: 210mm;
+                min-height: 297mm;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 8mm 10mm;
+                max-width: 100%;
+                margin: 0;
+            }
+            
+            .invoice-table th {
+                background: var(--primary) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .invoice-address-box,
+            .invoice-totals,
+            .bank-details {
+                background: var(--light) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .invoice-table {
+                page-break-inside: auto;
+            }
+            
+            .invoice-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            
+            .invoice-table thead {
+                display: table-header-group;
+            }
+            
+            .invoice-totals,
+            .invoice-footer {
+                page-break-inside: avoid;
+            }
+        }
+      </style></head><body>
+        <div class="invoice-container">
+          <!-- Invoice Header -->
+          <div class="invoice-header">
+            <div class="invoice-logo">
+              <i class="fas fa-file-invoice-euro"></i>
+              <div class="invoice-title">FACTUUR</div>
+            </div>
+            <div class="invoice-meta">
+              <div><strong>Factuur Nummer:</strong> ${esc(f.nummer)}</div>
+              <div><strong>Datum:</strong> ${esc(f.datum||'')}</div>
+              <div><strong>Te Betalen binnen:</strong> ${f.termijn||30} Dagen</div>
+              <div><strong>Vervaldatum:</strong> ${esc(f.vervaldatum||'')}</div>
+            </div>
+          </div>
+          
+          <!-- Addresses -->
+          <div class="invoice-addresses">
+            <div class="invoice-address-box">
+              <h3>Van:</h3>
+              <div>${esc(s.bedrijf||'Bedrijf')}</div>
+              <div>${esc(s.email||'')}</div>
+              <div>${esc(s.adres||'')}</div>
+              <div>${esc(s.postcode||'')} ${esc(s.stad||'')}</div>
+              <div>${esc(s.land||'Nederland')}</div>
+              <div style="margin-top:8px">KvK: ${esc(s.kvk||'-')}</div>
+              <div>BTW: ${esc(s.btw||'-')}</div>
+            </div>
+            
+            <div class="invoice-address-box">
+              <h3>Aan:</h3>
+              <div>${esc(klant.bedrijfsnaam||f.klant||'')}</div>
+              <div>${esc(klant.email||'')}</div>
+              <div>${esc(klant.adres||'')}</div>
+              <div>${esc(klant.postcode||'')} ${esc(klant.plaats||'')}</div>
+              <div>${esc(klant.land||'')}</div>
+            </div>
+          </div>
+          
+          <!-- Items Table -->
+          <table class="invoice-table">
+            <thead>
+              <tr>
+                <th>Omschrijving</th>
+                <th>Aantal</th>
+                <th>Prijs</th>
+                <th>Totaal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(f.items||[]).map(it=>{ 
+                const a=Number(it.aantal)||0; 
+                const p=Number(it.prijs)||0; 
+                const line=a*p; 
+                return '<tr><td>'+esc(it.beschrijving||'')+'</td><td>'+a+'</td><td>'+fmtEUR(p)+'</td><td>'+fmtEUR(line)+'</td></tr>';
+              }).join('')}
+            </tbody>
+          </table>
+          
+          <!-- Totals -->
+          <div class="invoice-totals">
+            <div class="invoice-totals-row">
+              <span>Subtotaal:</span>
+              <span>${fmtEUR(t.subtotaal)}</span>
+            </div>
+            <div class="invoice-totals-row">
+              <span>BTW:</span>
+              <span>${fmtEUR(t.btw)}</span>
+            </div>
+            <div class="invoice-totals-row">
+              <span>Totaal:</span>
+              <span>${fmtEUR(t.totaal)}</span>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="invoice-footer">
+            <div class="notes">${esc(f.notitie||'Bedankt voor uw vertrouwen!')}</div>
+            <div class="bank-details">
+              <strong>Bedrijfsinformatie</strong>
+              <div class="bank-details-content">
+                ${s.bedrijf ? esc(s.bedrijf)+ ' , ' : ''}${s.adres ? esc(s.adres)+' , ' : ''}${s.postcode ? esc(s.postcode)+' ' : ''}${s.stad ? esc(s.stad)+' , ' : ''}${s.telefoon ? 'Tel: '+esc(s.telefoon)+' , ' : ''}${s.email ? 'Email: '+esc(s.email)+' , ' : ''}
+                ${s.kvk ? 'KvK: '+esc(s.kvk)+' , ' : ''}${s.btw ? 'BTW: '+esc(s.btw)+' , ' : ''}${s.iban ? 'IBAN: '+esc(s.iban)+' , ' : ''}${s.land ? esc(s.land) : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>window.print();<\/script>
+      </body></html>`;
+
+    w.document.write(html); w.document.close();
+  }
+
+  // Expose for buttons
+  window.openKlantDialog = openKlantDialog;
+  window.openFactuurDialog = openFactuurDialog;
+  window.togglePaid = togglePaid;
+  window.deleteFactuur = deleteFactuur;
+  window.exportPDF = exportPDF;
+  window.deleteKlant = deleteKlant;
+  window.closeDialog = closeDialog;
+  window.getInvoiceExportData = async (id) => {
+    const invoice = facturenCache.find(item => item._id === id);
+    if (!invoice) return null;
+    const company = settingsCache.id
+      ? settingsCache
+      : await window.electronAPI.db.instellingen.get() || {};
+    const customer = klantenCache.find(item => item.bedrijfsnaam === invoice.klant) || {};
+    return { invoice, company, customer };
+  };
+  </script>
+</body>
+</html>

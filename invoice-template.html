@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factuur Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .invoice-container {
+            width: 210mm;
+            margin: 0 auto;
+            background: white;
+            padding: 10mm;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .invoice-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+        
+        .invoice-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .invoice-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+        }
+        
+        .invoice-meta {
+            text-align: right;
+            line-height: 1.8;
+        }
+        
+        .invoice-meta div {
+            margin-bottom: 5px;
+        }
+        
+        .invoice-meta strong {
+            color: var(--dark);
+            min-width: 150px;
+            display: inline-block;
+        }
+        
+        .invoice-addresses {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .invoice-address-box {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            min-height: 150px;
+        }
+        
+        .invoice-address-box h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 6px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .invoice-address-box div {
+            margin-bottom: 4px;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        
+        .invoice-table th {
+            background: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .invoice-table th:last-child,
+        .invoice-table td:last-child {
+            text-align: right;
+        }
+        
+        .invoice-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .invoice-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        .invoice-table tbody tr:hover {
+            background: var(--light);
+        }
+        
+        .invoice-totals {
+            width: 350px;
+            margin-left: auto;
+            background: var(--light);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .invoice-totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .invoice-totals-row:last-child {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+            border-top: 3px solid var(--primary);
+            border-bottom: none;
+            margin-top: 8px;
+            padding-top: 10px;
+        }
+        
+        .invoice-footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.65rem;
+            line-height: 1.3;
+            page-break-inside: avoid;
+        }
+        
+        .invoice-footer .notes {
+            font-style: italic;
+            margin-bottom: 8px;
+            font-size: 0.7rem;
+        }
+        
+        .bank-details {
+            background: var(--light);
+            padding: 6px 8px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .bank-details strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.7rem;
+        }
+        
+        .bank-details-content {
+            text-align: center;
+            line-height: 1.4;
+            font-size: 0.65rem;
+        }
+        
+        /* Print Styles */
+        @media print {
+            .no-print{display:none!important}
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .invoice-container {
+                width: 210mm;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 8mm 10mm;
+                max-width: 100%;
+                margin: 0;
+                page-break-after: avoid;
+            }
+            
+            .invoice-table th {
+                background: var(--primary) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .invoice-address-box,
+            .invoice-totals,
+            .bank-details {
+                background: var(--light) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .invoice-table {
+                page-break-inside: auto;
+            }
+            
+            .invoice-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            
+            .invoice-table thead {
+                display: table-header-group;
+            }
+            
+            .invoice-totals,
+            .invoice-footer {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom:15px;text-align:center">
+        <button onclick="window.print()" style="padding:10px 24px;font-size:14px;background:#4361ee;color:white;border:none;border-radius:8px;cursor:pointer">
+            Download PDF
+        </button>
+    </div>
+    <div class="invoice-container">
+        <!-- Invoice Header -->
+        <div class="invoice-header">
+            <div class="invoice-logo">
+                <!-- <img src="icon.png" alt="Logo" style="width:60px;height:60px;object-fit:contain;"> -->
+                <div class="invoice-title">FACTUUR</div>
+            </div>
+            <div class="invoice-meta">
+                <div><strong>Factuur Nummer:</strong> <span id="invoiceNumber"></span></div>
+                <div><strong>Datum:</strong> <span id="invoiceDate"></span></div>
+                <div><strong>Te Betalen binnen:</strong> <span id="paymentTerms"></span></div>
+                <div><strong>Vervaldatum:</strong> <span id="dueDate"></span></div>
+            </div>
+        </div>
+        
+        <!-- Addresses -->
+        <div class="invoice-addresses">
+            <div class="invoice-address-box">
+                <h3>Van:</h3>
+                <div id="fromName"></div>
+                <div id="fromEmail"></div>
+                <div id="fromAddress"></div>
+                <div><span id="fromZip"></span> <span id="fromCity"></span></div>
+                <div id="fromCountry"></div>
+            </div>
+            
+            <div class="invoice-address-box">
+                <h3>Aan:</h3>
+                <div id="toName"></div>
+                <div id="toEmail"></div>
+                <div id="toAddress"></div>
+                <div><span id="toZip"></span> <span id="toCity"></span></div>
+                <div id="toCountry"></div>
+            </div>
+        </div>
+        
+        <!-- Items Table -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Omschrijving</th>
+                    <th>Aantal</th>
+                    <th>Prijs</th>
+                    <th>Totaal</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceItems">
+                <!-- Items will be loaded here -->
+            </tbody>
+        </table>
+        
+        <!-- Totals -->
+        <div class="invoice-totals">
+            <div class="invoice-totals-row">
+                <span>Subtotaal:</span>
+                <span id="subtotal"></span>
+            </div>
+            <div class="invoice-totals-row">
+                <span>BTW (<span id="taxRate">21</span>%):</span>
+                <span id="tax"></span>
+            </div>
+            <div class="invoice-totals-row" id="discountRow" style="display: none;">
+                <span>Discount (<span id="discountRate">0</span>%):</span>
+                <span id="discount"></span>
+            </div>
+            <div class="invoice-totals-row">
+                <span>Totaal:</span>
+                <span id="total"></span>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <div class="notes" id="notes"></div>
+            
+            <div class="bank-details" id="bankDetailsSection" style="display: none;">
+                <div class="bank-details-content" id="bankDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Invoice Template - Load your data here
+        function loadInvoiceData(data) {
+            // Invoice details
+            document.getElementById('invoiceNumber').textContent = data.invoiceNumber || 'INV-2025-001';
+            document.getElementById('invoiceDate').textContent = data.invoiceDate || new Date().toLocaleDateString('nl-NL');
+            document.getElementById('paymentTerms').textContent = data.paymentTerms || '15 Dagen';
+            
+            // Calculate due date
+            const invoiceDate = data.invoiceDate ? new Date(data.invoiceDate.split('-').reverse().join('-')) : new Date();
+            const paymentDays = parseInt(data.paymentTerms) || 15;
+            const dueDate = new Date(invoiceDate);
+            dueDate.setDate(dueDate.getDate() + paymentDays);
+            document.getElementById('dueDate').textContent = data.dueDate || dueDate.toLocaleDateString('nl-NL');
+            
+            // From address
+            document.getElementById('fromName').textContent = data.from?.name || '';
+            document.getElementById('fromEmail').textContent = data.from?.email || '';
+            document.getElementById('fromAddress').textContent = data.from?.address || '';
+            document.getElementById('fromZip').textContent = data.from?.zip || '';
+            document.getElementById('fromCity').textContent = data.from?.city || '';
+            document.getElementById('fromCountry').textContent = data.from?.country || 'Nederland';
+            
+            // To address
+            document.getElementById('toName').textContent = data.to?.name || '';
+            document.getElementById('toEmail').textContent = data.to?.email || '';
+            document.getElementById('toAddress').textContent = data.to?.address || '';
+            document.getElementById('toZip').textContent = data.to?.zip || '';
+            document.getElementById('toCity').textContent = data.to?.city || '';
+            document.getElementById('toCountry').textContent = data.to?.country || 'Nederland';
+            
+            // Items
+            const itemsContainer = document.getElementById('invoiceItems');
+            itemsContainer.innerHTML = '';
+            
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.description}</td>
+                        <td>${item.quantity}</td>
+                        <td>${formatCurrency(item.price)}</td>
+                        <td>${formatCurrency(item.quantity * item.price)}</td>
+                    `;
+                    itemsContainer.appendChild(row);
+                });
+            }
+            
+            // Calculate totals
+            const subtotal = data.items?.reduce((sum, item) => sum + (item.quantity * item.price), 0) || 0;
+            const taxRate = data.taxRate || 0.21;
+            const tax = subtotal * taxRate;
+            const discountRate = data.discountRate || 0;
+            const discount = subtotal * discountRate;
+            const total = subtotal + tax - discount;
+            
+            document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('taxRate').textContent = (taxRate * 100).toFixed(0);
+            document.getElementById('tax').textContent = formatCurrency(tax);
+            
+            if (discountRate > 0) {
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountRate').textContent = (discountRate * 100).toFixed(0);
+                document.getElementById('discount').textContent = formatCurrency(discount);
+            }
+            
+            document.getElementById('total').textContent = formatCurrency(total);
+            
+            // Footer
+            document.getElementById('notes').textContent = data.notes || 'Bedankt voor uw vertrouwen!';
+            
+            if (data.bankDetails) {
+                document.getElementById('bankDetailsSection').style.display = 'block';
+                document.getElementById('bankDetails').textContent = data.bankDetails;
+            }
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('nl-NL', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(amount);
+        }
+        
+        // Load invoice data from URL parameter (passed via base64 encoded JSON)
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const dataParam = params.get('data');
+            
+            if (!dataParam) return;
+            
+            try {
+                const data = JSON.parse(decodeURIComponent(escape(atob(dataParam))));
+                const f = data.invoice;
+                const s = data.company;
+                const klant = data.customer;
+                
+                const invoiceData = {
+                    invoiceNumber: f.nummer,
+                    invoiceDate: f.datum,
+                    paymentTerms: f.termijn || 30,
+                    dueDate: f.vervaldatum,
+                    from: {
+                        name: s.bedrijf || '',
+                        email: s.email || '',
+                        address: s.adres || '',
+                        zip: s.postcode || '',
+                        city: s.stad || '',
+                        country: s.land || 'Nederland'
+                    },
+                    to: {
+                        name: klant.bedrijfsnaam || f.klant || '',
+                        email: klant.email || '',
+                        address: klant.adres || '',
+                        zip: klant.postcode || '',
+                        city: klant.plaats || '',
+                        country: klant.land || 'Nederland'
+                    },
+                    items: (f.items || []).map(it => ({
+                        description: it.beschrijving,
+                        quantity: Number(it.aantal) || 0,
+                        price: Number(it.prijs) || 0
+                    })),
+                    taxRate: (f.items || []).reduce((sum, it) => sum + (Number(it.btw) || 0), 0) / Math.max((f.items || []).length, 1) / 100,
+                    notes: f.notitie || 'Bedankt voor uw vertrouwen!',
+                    bankDetails: [
+                        s.telefoon?.trim() ? `Tel: ${s.telefoon.trim()}` : '',
+                        s.email?.trim() ? `Email: ${s.email.trim()}` : '',
+                        s.kvk?.trim() ? `KvK: ${s.kvk.trim()}` : '',
+                        s.btw?.trim() ? `BTW: ${s.btw.trim()}` : '',
+                        s.iban?.trim() ? `IBAN: ${s.iban.trim()}` : ''
+                    ].filter(Boolean).join(', ')
+                };
+                
+                loadInvoiceData(invoiceData);
+            } catch (err) {
+                console.error('Failed to load invoice data:', err);
+            }
+        }
+        
+        // Example: Load data from localStorage
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('invoiceData');
+            if (savedData) {
+                loadInvoiceData(JSON.parse(savedData));
+            }
+        }
+        
+        // Expose function globally for easy access
+        window.loadInvoiceData = loadInvoiceData;
+        
+        // Auto-load on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromURL();
+            // Or use: loadFromLocalStorage();
+        });
+        
+        // Keyboard shortcut for printing
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>
