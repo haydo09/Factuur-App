@@ -1,6 +1,5 @@
-const { app, BrowserWindow, shell, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, shell, Menu } = require('electron');
 const path = require('path');
-const db = require('./database');
 
 let mainWindow;
 
@@ -10,7 +9,7 @@ function createWindow() {
     height: 700,
     center: true,
     title: 'Factuur App',
-    icon: path.join(__dirname, 'icon.ico'),
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -46,84 +45,6 @@ function createWindow() {
 
   mainWindow.on('closed', () => { mainWindow = null; });
 }
-
-// ====== NeDB IPC Handlers ======
-
-// Klanten
-ipcMain.handle('klanten:getAll', () => {
-  return new Promise((resolve, reject) => {
-    db.klanten.find({}, (err, docs) => err ? reject(err) : resolve(docs));
-  });
-});
-
-ipcMain.handle('klanten:insert', (event, data) => {
-  return new Promise((resolve, reject) => {
-    db.klanten.insert(data, (err, doc) => err ? reject(err) : resolve(doc));
-  });
-});
-
-ipcMain.handle('klanten:update', (event, id, data) => {
-  return new Promise((resolve, reject) => {
-    db.klanten.update({ _id: id }, { $set: data }, {}, (err) => err ? reject(err) : resolve());
-  });
-});
-
-ipcMain.handle('klanten:delete', (event, id) => {
-  return new Promise((resolve, reject) => {
-    db.klanten.remove({ _id: id }, {}, (err) => err ? reject(err) : resolve());
-  });
-});
-
-// Facturen
-ipcMain.handle('facturen:getAll', () => {
-  return new Promise((resolve, reject) => {
-    db.facturen.find({}, (err, docs) => err ? reject(err) : resolve(docs));
-  });
-});
-
-ipcMain.handle('facturen:insert', (event, data) => {
-  return new Promise((resolve, reject) => {
-    db.facturen.insert(data, (err, doc) => err ? reject(err) : resolve(doc));
-  });
-});
-
-ipcMain.handle('facturen:update', (event, id, data) => {
-  return new Promise((resolve, reject) => {
-    db.facturen.update({ _id: id }, { $set: data }, {}, (err) => err ? reject(err) : resolve());
-  });
-});
-
-ipcMain.handle('facturen:delete', (event, id) => {
-  return new Promise((resolve, reject) => {
-    db.facturen.remove({ _id: id }, {}, (err) => err ? reject(err) : resolve());
-  });
-});
-
-// Instellingen
-ipcMain.handle('instellingen:get', () => {
-  return new Promise((resolve, reject) => {
-    db.instellingen.findOne({ id: 'company' }, (err, doc) => err ? reject(err) : resolve(doc || {}));
-  });
-});
-
-ipcMain.handle('instellingen:save', (event, data) => {
-  return new Promise((resolve, reject) => {
-    db.instellingen.update({ id: 'company' }, data, { upsert: true }, (err) => err ? reject(err) : resolve());
-  });
-});
-
-// Meta
-ipcMain.handle('meta:get', (event, key) => {
-  return new Promise((resolve, reject) => {
-    db.meta.findOne({ key }, (err, doc) => err ? reject(err) : resolve(doc));
-  });
-});
-
-ipcMain.handle('meta:set', (event, key, value) => {
-  return new Promise((resolve, reject) => {
-    db.meta.update({ key }, { key, value }, { upsert: true }, (err) => err ? reject(err) : resolve());
-  });
-});
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null); // Disable default menu bar
