@@ -9,12 +9,11 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "portable": "electron-builder --win portable",
-    "msi": "electron-builder --win msi",
-    "win": "electron-builder --win",
-    "nsis": "electron-builder --win nsis"
+    "msi": "electron-builder --win msi"
   },
   "keywords": [],
-  "author": "Hakan",
+  "author": "Hakan <info.haydo@gmail.com>",
+  "homepage": "https://github.com/haydo09",
   "license": "ISC",
   "devDependencies": {
     "electron": "^44.4.5",
@@ -27,8 +26,7 @@
       "target": [
         "portable",
         "msi",
-        "appx",
-        "nsis"
+        "appx"
       ],
       "icon": "assets/icon.ico"
     },
@@ -60,15 +58,11 @@
     "files": [
       "main.js",
       "preload.js",
-      "database.js",
       "index.html",
       "invoice-template.html",
       "manifest.webmanifest",
       "icon.png",
       "assets/**/*"
     ]
-  },
-  "dependencies": {
-    "nedb": "^1.8.0"
   }
 }
